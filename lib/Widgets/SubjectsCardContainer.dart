@@ -3,11 +3,9 @@ import 'package:ai_sys/Widgets/RecommandedSubjectCard.dart';
 import 'package:flutter/material.dart';
 
 class SubjectsCardContainer extends StatelessWidget {
-  final String title;
   final List<Subject> subjects;
   SubjectsCardContainer(
-      {required this.title,
-      required this.subjects,
+      {required this.subjects,
       this.isRemoved = false,
       required this.buttonText,
       required this.color,
@@ -24,15 +22,15 @@ class SubjectsCardContainer extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(20),
       child: Card(
-        color: Colors.white,
+        color: Colors.blue[100],
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 16),
+              // Text(title,
+              //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              // SizedBox(height: 16),
               Padding(
                 padding: EdgeInsets.only(bottom: 50),
                 child: GridView.builder(
@@ -42,22 +40,22 @@ class SubjectsCardContainer extends StatelessWidget {
                     maxCrossAxisExtent: 500,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 4 / 2,
+                    childAspectRatio: 2,
                   ),
                   itemCount: subjects.length,
                   itemBuilder: (context, index) {
                     Subject subject = subjects[index];
                     return RecommandedSubjectCard(
-                        subject: subject,
-                        buttonText:
-                            subject.isSelected ? "Cancel" : "Add To Plan",
-                        color: color,
-                        width: width,
-                        onTap: onTap,
-                        isRemoved: isRemoved,
-                        isCancel:
-                            subject.isSelected
-                        );
+                      subject: subject,
+                      buttonText: buttonText,
+                      // subject.isSelected ? "Cancel" : "Add To Plan",
+                      color: color,
+                      width: width,
+                      onTap: onTap,
+                      isRemoved: isRemoved,
+                      // isCancel:
+                      //     subject.isSelected
+                    );
                   },
                 ),
               ),

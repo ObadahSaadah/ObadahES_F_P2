@@ -38,6 +38,9 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   flutter_switch: ^0.3.2
   horizontal_data_table: ^4.3.1
+  equatable: ^2.0.7
+  flutter_bloc: ^9.1.1
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

@@ -4,12 +4,14 @@ class ProfileTextField extends StatelessWidget {
   final TextEditingController? controller;
   final bool obscure;
   final String label;
+  final bool readOnly;
 
   const ProfileTextField({
     Key? key,
     required this.label,
     this.controller,
     this.obscure = false,
+    this.readOnly = true,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class ProfileTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        readOnly: readOnly,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(),

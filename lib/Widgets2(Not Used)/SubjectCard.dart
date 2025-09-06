@@ -1,18 +1,30 @@
-import 'package:ai_sys/Pages/CourseDetails.dart';
+import 'package:ai_sys/Bloc/Cubit/CoursesCubit.dart';
+import 'package:ai_sys/Models/SubjectModel.dart';
+import 'package:ai_sys/CourseDetailsPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CourseCard extends StatelessWidget {
-  CourseCard({super.key});
-  String status = "راسب";
+class CourseCard extends StatefulWidget {
+  final Subject subject;
+  final bool isRecommand;
 
+  const CourseCard(
+      {super.key, required this.subject, required this.isRecommand});
+
+  @override
+  State<CourseCard> createState() => _CourseCardState();
+}
+
+class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, CourseDetails.id);
+        Navigator.pushNamed(context, CourseDetailsPage.id,
+            arguments: widget.subject);
       },
       child: Card(
-        margin: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 3,
         child: Padding(
@@ -26,41 +38,38 @@ class CourseCard extends StatelessWidget {
                   color: Colors.green.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  'الزامية',
-                  style: TextStyle(color: Colors.green),
+                child: Text(
+                  '${widget.subject.type}',
+                  style: const TextStyle(color: Colors.green),
                 ),
               ),
               const SizedBox(height: 12),
-
               Row(
-                children: const [
-                  Icon(Icons.menu_book, color: Colors.blue),
-                  SizedBox(width: 6),
+                children: [
+                  const Icon(Icons.menu_book, color: Colors.blue),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      'البرمجة المتقدمة',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      "${widget.subject.name}",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
-              const Text(
-                'CS301',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                '${widget.subject.code}',
+                style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 12),
-
-              // عدد الساعات وحالة المادة
               Row(
                 children: [
                   const Icon(Icons.access_time, size: 18, color: Colors.blue),
                   const SizedBox(width: 4),
-                  const Text('3 ساعات'),
+                  Text('${widget.subject.credits} ساعات'),
                   const SizedBox(width: 10),
-                  if (status == "راسب")
+                  if (widget.subject.is_failed)
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
@@ -76,39 +85,66 @@ class CourseCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-
-              // الوصف
-              const Text(
-                'ترفع المعدل بناءً على نتائجك السابقة',
-                style: TextStyle(color: Colors.black87),
-              ),
+              if (widget.isRecommand)
+                const Text(
+                  'ترفع المعدل بناءً على نتائجك السابقة',
+                  style: TextStyle(color: Colors.black87),
+                ),
               const SizedBox(height: 50),
-
-              // الأزرار
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final coursesCubit = context.read<CoursesCubit>();
+                        final hoursCubit = context.read<HoursCubit>();
+
+                        final isAlreadyAdded =
+                            coursesCubit.addedIds.contains(widget.subject.id);
+
+                        coursesCubit.toggleCourseSelection(widget.subject.id);
+
+                        if (!isAlreadyAdded) {
+                          hoursCubit.addCredits(widget.subject.credits);
+                        } else {
+                          hoursCubit.removeCredits(widget.subject.credits);
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: context
+                                .watch<CoursesCubit>()
+                                .addedIds
+                                .contains(widget.subject.id)
+                            ? Colors.red
+                            : Colors.blue,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: const Text(
-                        'إضافة إلى جدولي',
-                        style: TextStyle(color: Colors.white),
+                      child: Text(
+                        context
+                                .watch<CoursesCubit>()
+                                .addedIds
+                                .contains(widget.subject.id)
+                            ? 'إلغاء'
+                            : 'إضافة إلى جدولي',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, CourseDetailsPage.id,
+                          arguments: widget.subject);
+                    },
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('تفاصيل أكثر'),
+                    child: const Text(
+                      'تفاصيل أكثر',
+                      style: TextStyle(color: Colors.blue),
+                    ),
                   ),
                 ],
               ),

@@ -2,17 +2,18 @@ import 'package:ai_sys/Models/SubjectModel.dart';
 import 'package:flutter/material.dart';
 
 class RecommandedSubjectCard extends StatelessWidget {
-  RecommandedSubjectCard(
-      {required this.subject,
-      required this.buttonText,
-      required this.color,
-      required this.width,
-      this.isRemoved = false,
-      required this.onTap,
-      required this.isCancel});
+  RecommandedSubjectCard({
+    required this.subject,
+    required this.buttonText,
+    required this.color,
+    required this.width,
+    this.isRemoved = false,
+    required this.onTap,
+    // required this.isCancel
+  });
   double width;
   Subject subject;
-  bool isCancel;
+  // bool isCancel;
   bool isRemoved;
   String buttonText;
   Color color;
@@ -23,7 +24,6 @@ class RecommandedSubjectCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Container(
-        height: 160,
         decoration: BoxDecoration(
             color: Colors.grey[50], borderRadius: BorderRadius.circular(16)),
         child: Padding(
@@ -56,7 +56,7 @@ class RecommandedSubjectCard extends StatelessWidget {
                         color: Colors.blue[100],
                         borderRadius: BorderRadius.circular(4)),
                     child: Center(
-                      child: Text("${subject.credits}+ Cridits"),
+                      child: Text("${subject.credits}+ ساعات"),
                     ),
                   )
                 ],
@@ -67,7 +67,7 @@ class RecommandedSubjectCard extends StatelessWidget {
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
                       child: Icon(Icons.stacked_line_chart_rounded)),
-                  Text("Difficulty : " + subject.difficulty)
+                  Text("المستوى : " + subject.difficulty)
                 ],
               ),
               SizedBox(height: 10),
@@ -80,16 +80,19 @@ class RecommandedSubjectCard extends StatelessWidget {
                   child: Container(
                     width: width,
                     height: 35,
-                    color: isRemoved
-                        ? Colors.red
-                        : (isCancel ? Colors.grey[300] : color),
+                    color:
+                        // isRemoved
+                        // ?
+                        Color.fromARGB(255, 230, 79, 69),
+                    // : (isCancel ? Colors.grey[300] : color),
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: Center(
                       child: Text(
-                        isRemoved
-                            ? "Remove"
-                            // : (isCancel ? "Cancel" : buttonText),
-                            : buttonText,
+                        // isRemoved
+                        // ?
+                        "إزالة",
+                        // : (isCancel ? "Cancel" : buttonText),
+                        // : buttonText,
                         style: TextStyle(fontSize: 15, color: Colors.white),
                       ),
                     ),
