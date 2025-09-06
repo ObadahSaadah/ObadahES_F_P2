@@ -17,7 +17,10 @@ class CoursesCubit extends Cubit<CoursesStates> {
   List<int> get addedIds => _addedIds;
   List<int> get removedIds => _removedIds;
 
-  Future<void> getAllCourses({required String token}) async {
+  Future<void> getAllCourses({
+    required String token,
+    required HoursCubit hoursCubit,
+  }) async {
     emit(CoursesLoading());
     try {
       final url = Uri.parse('$baseUrl/student/eligible-courses');
@@ -29,11 +32,15 @@ class CoursesCubit extends Cubit<CoursesStates> {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
 
-        // int totalSelectedHours = data['plan_credit_hours'] ?? 0;
+        int totalSelectedHours = data['plan_credit_hours'] ?? 0;
 
         _allCourses = (data['eligible_courses'] as List)
             .map((e) => Subject.fromJson(e as Map<String, dynamic>))
             .toList();
+
+        // تحديث HoursCubit بالساعات المضافة
+        hoursCubit.resetCredits();
+        hoursCubit.addCredits(totalSelectedHours);
 
         emit(CoursesLoaded(_allCourses));
       } else {
@@ -47,6 +54,7 @@ class CoursesCubit extends Cubit<CoursesStates> {
   Future<void> getRecommadations({
     required String token,
     required int creditHours,
+    required HoursCubit hoursCubit,
   }) async {
     emit(CoursesLoading());
     try {
@@ -62,12 +70,17 @@ class CoursesCubit extends Cubit<CoursesStates> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        // int total_selected_hours = data["plan_credit_hours"] ?? 0;
+
+        int totalSelectedHours = data['total_selected_hours'] ?? 0;
         final List<dynamic> coursesJson = data["courses"] ?? [];
 
         _allCourses = coursesJson
             .map((e) => Subject.fromJson(e as Map<String, dynamic>))
             .toList();
+
+        // تحديث HoursCubit بالساعات المضافة
+        hoursCubit.resetCredits();
+        hoursCubit.addCredits(totalSelectedHours);
 
         emit(CoursesLoaded(_allCourses));
       } else {
@@ -148,10 +161,10 @@ class CoursesCubit extends Cubit<CoursesStates> {
       _addedIds.add(subjectId);
     }
     emit(CoursesLoaded(_allCourses));
-    // emit(CoursesSelectionChanged(_allCourses, _addedIds, _removedIds));
   }
 
-  Future<void> addCourses({required String token}) async {
+  Future<void> addCourses(
+      {required String token, required HoursCubit hoursCubit}) async {
     if (_addedIds.isEmpty) return;
 
     emit(PlanSaving());
@@ -169,7 +182,38 @@ class CoursesCubit extends Cubit<CoursesStates> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _addedIds.clear();
-        await getAllCourses(token: token);
+        // إعادة جلب جميع المواد بعد الحفظ لتحديث _allCourses و HoursCubit
+        await getAllCourses(token: token, hoursCubit: hoursCubit);
+      } else {
+        emit(PlanError("خطأ في إضافة المواد: ${response.statusCode}"));
+      }
+    } catch (e) {
+      emit(PlanError("Exception: $e"));
+    }
+  }
+
+  Future<void> addCourses1(
+      {required String token, required HoursCubit hoursCubit}) async {
+    if (_addedIds.isEmpty) return;
+
+    emit(PlanSaving());
+
+    try {
+      final url = Uri.parse('$baseUrl/student/selected-courses');
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: json.encode({"course_ids": _addedIds}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _addedIds.clear();
+        // إعادة جلب جميع المواد بعد الحفظ لتحديث _allCourses و HoursCubit
+        await getRecommadations(
+            token: token, hoursCubit: hoursCubit, creditHours: 18);
       } else {
         emit(PlanError("خطأ في إضافة المواد: ${response.statusCode}"));
       }

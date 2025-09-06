@@ -11,24 +11,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AllCoursesPage extends StatelessWidget {
   AllCoursesPage({super.key});
   static String id = "AllCoursesPage";
-  int selectedIndex = 1;
+  final int selectedIndex = 1;
+  static const int maxHours = 18; // الحد الأقصى للساعات
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<HoursCubit>(create: (context) => HoursCubit()),
         BlocProvider<CoursesCubit>(
           create: (context) {
             final authState = context.read<AuthCubit>().state;
+            final hoursCubit = context.read<HoursCubit>();
+            final cubit = CoursesCubit();
             if (authState is LoginSuccess) {
-              return CoursesCubit()..getAllCourses(token: authState.token);
-            } else {
-              return CoursesCubit();
+              cubit.getAllCourses(
+                token: authState.token,
+                hoursCubit: hoursCubit,
+              );
             }
+            return cubit;
           },
-        ),
-        BlocProvider<HoursCubit>(
-          create: (context) => HoursCubit(),
         ),
       ],
       child: Scaffold(
@@ -95,7 +98,28 @@ class AllCoursesPage extends StatelessWidget {
                             style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           onPressed: () async {
-                            await cubit.addCourses(token: authState.token);
+                            final hoursCubit = context.read<HoursCubit>();
+                            int addedHours = hoursCubit.addedHours;
+
+                            if (addedHours > maxHours) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "لا يمكن إضافة أكثر من $maxHours ساعة"),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                              return; // لا يتم الحفظ
+                            }
+
+                            if (authState is LoginSuccess) {
+                              await cubit.addCourses(
+                                token: authState.token,
+                                hoursCubit: hoursCubit,
+                                // reloadType: CoursesReloadType.recommandations,
+                              );
+                            }
                           },
                         ),
                       )
@@ -119,9 +143,7 @@ class AllCoursesPage extends StatelessWidget {
                             child:
                                 CircularProgressIndicator(color: primaryColor));
                       } else if (state is CoursesLoaded) {
-                        List subjects = [];
-
-                        subjects = state.courses;
+                        final subjects = state.courses;
                         if (subjects.isEmpty) {
                           return Center(child: Text("لا يوجد بيانات لعرضها"));
                         }

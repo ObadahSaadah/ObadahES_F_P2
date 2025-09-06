@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
+  Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
 
@@ -30,9 +31,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<CoursesCubit>(
           create: (context) => CoursesCubit(),
         ),
-        // BlocProvider<HoursCubit>(
-        //   create: (context) => HoursCubit(),
-        // ),
+        BlocProvider<HoursCubit>(
+          create: (context) => HoursCubit(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -52,5 +53,19 @@ class MyApp extends StatelessWidget {
         initialRoute: LoginPage.id,
       ),
     );
+  }
+}
+
+class MyBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    print('${bloc.runtimeType} changed: $change');
+  }
+
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    print('${bloc.runtimeType} transition: $transition');
   }
 }

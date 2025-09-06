@@ -7,33 +7,36 @@ import 'package:ai_sys/Widgets2(Not%20Used)/SubjectCard.dart';
 import 'package:ai_sys/Widgets2(Not%20Used)/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+ 
 
 class RecommandationsCoursesPage extends StatelessWidget {
   RecommandationsCoursesPage({super.key});
   static String id = "RecommandationsCoursesPage";
   final int selectedIndex = 2;
+  static const int maxHours = 18; // الحد الأقصى للساعات
 
   @override
   Widget build(BuildContext context) {
     final creditHours =
         ModalRoute.of(context)!.settings.arguments as int? ?? 15;
-    final authState = context.read<AuthCubit>().state;
 
     return MultiBlocProvider(
       providers: [
+        BlocProvider<HoursCubit>(create: (_) => HoursCubit()),
         BlocProvider<CoursesCubit>(
           create: (context) {
+            final hoursCubit = context.read<HoursCubit>();
+            final authState = context.read<AuthCubit>().state;
             final cubit = CoursesCubit();
-            String token = "";
             if (authState is LoginSuccess) {
-              token = authState.token;
+              cubit.getRecommadations(
+                token: authState.token,
+                creditHours: creditHours,
+                hoursCubit: hoursCubit,
+              );
             }
-            cubit.getRecommadations(token: token, creditHours: creditHours);
             return cubit;
           },
-        ),
-        BlocProvider<HoursCubit>(
-          create: (context) => HoursCubit(),
         ),
       ],
       child: Scaffold(
@@ -100,7 +103,28 @@ class RecommandationsCoursesPage extends StatelessWidget {
                             style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           onPressed: () async {
-                            await cubit.addCourses(token: authState.token);
+                            final hoursCubit = context.read<HoursCubit>();
+                            int addedHours = hoursCubit.addedHours;
+
+                            if (addedHours > maxHours) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "لا يمكن إضافة أكثر من $maxHours ساعة"),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                              return; // لا يتم الحفظ
+                            }
+
+                            if (authState is LoginSuccess) {
+                              await cubit.addCourses1(
+                                token: authState.token,
+                                hoursCubit: hoursCubit,
+                                // reloadType: CoursesReloadType.allCourses,
+                              );
+                            }
                           },
                         ),
                       )
