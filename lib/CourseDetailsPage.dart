@@ -86,17 +86,31 @@ class CourseDetailsPage extends StatelessWidget {
                                 valueChipColor: Colors.lightGreen,
                               ),
                               // if (subject.student_Status != "not_taken_before")
-                              // if (subject.is_failed)
-                              _InfoTile(
-                                title: "الحالة",
-                                value: subject.is_failed
-                                    ? "راسب"
-                                    : "لم يتم تقديمها",
-                                icon: Icons.info,
-                                valueChipColor: subject.is_failed
-                                    ? Colors.red
-                                    : Colors.blueGrey,
-                              )
+                              if (subject.is_failed ||
+                                  subject.student_Status == "failed_before")
+                                _InfoTile(
+                                    title: "الحالة",
+                                    value: "راسب",
+                                    icon: Icons.info,
+                                    valueChipColor: Colors.red),
+                              if (subject.is_conditional ||
+                                  subject.student_Status ==
+                                      "conditional_promotion")
+                                _InfoTile(
+                                  title: "الحالة",
+                                  value: "ترفع شرطي",
+                                  icon: Icons.info,
+                                  valueChipColor: Colors.orange[200],
+                                ),
+                              if (subject.is_conditional == false &&
+                                      subject.is_failed == false ||
+                                  subject.student_Status == "not_taken_before")
+                                _InfoTile(
+                                  title: "الحالة",
+                                  value: "لم يتم تقديمها",
+                                  icon: Icons.info,
+                                  valueChipColor: Colors.grey,
+                                ),
                             ],
                           ),
                           const SizedBox(height: 16),
