@@ -12,7 +12,7 @@ class AllCoursesPage extends StatelessWidget {
   AllCoursesPage({super.key});
   static String id = "AllCoursesPage";
   final int selectedIndex = 1;
-  static const int maxHours = 18; // الحد الأقصى للساعات
+  static const int maxHours = 18;
 
   @override
   Widget build(BuildContext context) {

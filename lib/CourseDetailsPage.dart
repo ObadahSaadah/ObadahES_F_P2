@@ -8,7 +8,10 @@ class CourseDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subject = ModalRoute.of(context)!.settings.arguments as Subject;
+    final data =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    Subject subject = data["subject"];
+    bool isR = data["isR"];
     print(subject.status);
     return Theme(
       data: Theme.of(context).copyWith(
@@ -64,6 +67,12 @@ class CourseDetailsPage extends StatelessWidget {
                                 value: subject.credits.toString(),
                                 icon: Icons.av_timer,
                               ),
+                              if (isR)
+                                _InfoTile(
+                                  title: "النتيجة المتوقعة",
+                                  value: "${subject.predicted_mark}",
+                                  icon: Icons.batch_prediction,
+                                ),
                               // _InfoTile(
                               //   title: "الحالة",
                               //   value: _arabicStatus(subject.status),

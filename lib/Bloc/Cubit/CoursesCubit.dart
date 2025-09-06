@@ -71,7 +71,7 @@ class CoursesCubit extends Cubit<CoursesStates> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
 
-        int totalSelectedHours = data['total_selected_hours'] ?? 0;
+        int totalSelectedHours = data['plan_credit_hours'] ?? 0;
         final List<dynamic> coursesJson = data["courses"] ?? [];
 
         _allCourses = coursesJson

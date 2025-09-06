@@ -32,7 +32,7 @@ class HomePublicInfoContainer extends StatelessWidget {
             Spacer(
               flex: 1,
             ),
-            Icon(icon, color: iconColor, size: 30),
+            Icon(icon, color: iconColor, size: 60),
             Spacer(
               flex: 2,
             ),
@@ -40,7 +40,7 @@ class HomePublicInfoContainer extends StatelessWidget {
               text1,
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold),
             ),
             Spacer(
@@ -50,7 +50,7 @@ class HomePublicInfoContainer extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
                 text2,
-                style: TextStyle(color: Colors.black, fontSize: 12),
+                style: TextStyle(color: Colors.black, fontSize: 18),
                 // overflow: TextOverflow.ellipsis,
                 maxLines: 3,
               ),

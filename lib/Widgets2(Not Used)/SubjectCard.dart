@@ -21,7 +21,7 @@ class _CourseCardState extends State<CourseCard> {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, CourseDetailsPage.id,
-            arguments: widget.subject);
+            arguments: {"subject": widget.subject, "isR": widget.isRecommand});
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -135,7 +135,10 @@ class _CourseCardState extends State<CourseCard> {
                   OutlinedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, CourseDetailsPage.id,
-                          arguments: widget.subject);
+                          arguments: {
+                            "subject": widget.subject,
+                            "isR": widget.isRecommand
+                          });
                     },
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(

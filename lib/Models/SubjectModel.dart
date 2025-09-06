@@ -9,6 +9,7 @@ class Subject {
   final String student_Status;
   final String type;
   final bool is_failed;
+  final double predicted_mark;
 
   const Subject({
     required this.id,
@@ -21,6 +22,7 @@ class Subject {
     required this.student_Status,
     required this.type,
     required this.is_failed,
+    required this.predicted_mark,
   });
 
   factory Subject.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class Subject {
       student_Status: json['history_status']?.toString() ?? '',
       type: json['requirement_type']?.toString() ?? '',
       is_failed: json['is_failed'] ?? false,
+      predicted_mark: json['predicted_mark'] ?? 0,
     );
   }
 }
